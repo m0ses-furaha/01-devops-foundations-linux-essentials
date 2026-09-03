@@ -11,7 +11,7 @@ const server = http.createServer((req, res) => {
 
   if (req.url === "/api/orders") {
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ orders: [] }));
+    res.end(JSON.stringify({ orders: [], statusEndpoint: "/orders/status" }));
     return;
   }
 
