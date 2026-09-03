@@ -43,6 +43,14 @@ this handover, what was accepted, what was changed, and why.
   open question for the CTO, not resolved — a business/security decision
   outside repo scope.
 
+## Second secret found
+
+A `.env` file with a DB password, AWS keys, and a JWT signing secret was
+also committed directly to `main` (mirrored in `problem-repo`). Same
+treatment as the webhook secret: amended away before it had any
+descendants, verified gone from the full object store afterward, and
+its variable names moved into `.env.example`.
+
 ## Note on realism
 
 `problem-repo` and this repo are a teaching pair, not a real incident —
