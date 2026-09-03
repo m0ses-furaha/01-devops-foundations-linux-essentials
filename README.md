@@ -23,6 +23,21 @@ Keeping the before and after as two separate trees — rather than one repo wher
 is fixed forward — was deliberate: it keeps the original state readable while letting the
 fix history show exactly which commit addressed which defect.
 
+### Why two repos instead of one
+
+`problem-repo` and `best-practices-repo` were built and committed to as two independent
+git histories that share the same commits up to the point the mess was frozen
+(`dd9107d`), then diverge — `problem-repo` stops there, `best-practices-repo` continues
+with the fixes on top. That split is what makes `git diff dd9107d..fb2238a` inside
+`best-practices-repo` show, commit by commit, exactly what each fix changed and why,
+without disturbing the original broken state.
+
+They were combined into this single top-level repo afterward with `git subtree add`
+for each folder, which is why `git log` still shows every original commit — the founding
+engineer's, the departed engineer's, and the handover work — rather than one flattened
+import. Nothing about the histories was rewritten in that step; `git subtree` only grafts
+them under a path prefix.
+
 ## What was inherited
 
 Four distinct problems, all documented in
@@ -71,38 +86,34 @@ All under [`best-practices-repo/docs/`](best-practices-repo/docs/):
 - [`AI_LOG.md`](best-practices-repo/docs/AI_LOG.md) — AI assistance used, what was accepted, what was independently verified, and what was rejected. The brief permits AI use provided it's logged rather than hidden.
 - [`DAY2_INCIDENT.md`](best-practices-repo/docs/DAY2_INCIDENT.md) — template, to be filled in during the live walkthrough.
 
-## What is not done
+## ⚠️ What is not done — the sandbox VM / server audit
 
-The brief also required a sandbox VM or EC2 instance to be provisioned and audited
-against [`server-baseline-policy.md`](server-baseline-policy.md): directory ownership and
-`750` permissions on `/opt/kente-retail/app`, the `deploy` user and `ops` group, the
-hostname convention, and a network-fault diagnosis with evidence that connectivity was
-restored.
+The brief required a sandbox VM or EC2 instance to be provisioned and audited against
+[`server-baseline-policy.md`](server-baseline-policy.md): directory ownership and `750`
+permissions on `/opt/kente-retail/app`, the `deploy` user and `ops` group, the hostname
+convention, and a network-fault diagnosis with evidence that connectivity was restored.
 
-**That work is genuinely missing from this submission.** This was treated as a
-repository-cleanup exercise, and the server side was not recognised as a separate required
-deliverable until review. It is stated here rather than left to surface on its own, and
-none of the documents claim server work that didn't happen.
+**None of that happened, and it's not in this submission.** I read the brief as a
+repository-cleanup exercise and didn't register the server audit as a separate,
+independently required deliverable — that only became clear once it came back in
+review. No VM was ever stood up, so there's no permissions output, no `id deploy`, no
+`hostnamectl`, no connectivity test to show, and nothing in `docs/` claims otherwise.
+Everything in this repo (the git audit, the secret purge, the branching doc, the
+onboarding note) is real and independently verifiable; the server half simply isn't
+here.
 
-Remaining work: stand up the sandbox VM, run the audit, and add the evidence —
-permissions output, `id deploy`, `hostnamectl`, and a successful connectivity test — as
+**Remaining work:** provision the sandbox VM/EC2 instance, run the audit against
+`server-baseline-policy.md` end to end, and add the evidence — permissions output,
+`id deploy`, `hostnamectl`, and a successful connectivity test — as
 `docs/SERVER_AUDIT.md`.
 
-## Commit history
+## Notes on history and layout
 
-Both subdirectories were merged in with `git subtree`, so the original commits survive
-intact rather than being flattened into a single import. `git log` shows all three
-authors — the founding engineer, the departed engineer, and the handover work — which is
-what makes the defence walkthrough possible.
-
-One consequence worth knowing when reading history: `git subtree add` doesn't rewrite the
-merged history, so commits from before each merge point refer to root-level paths
-(`src/index.js`), not the prefixed paths they occupy today
-(`best-practices-repo/src/index.js`). Path-filtered history queries need to account for
-that.
-
-Full mirrors of both original repositories, including the stray branches that were not
-carried into `main`, are retained outside this repository.
+`git subtree add` doesn't rewrite the histories it grafts in, so commits from before
+each merge point refer to root-level paths (`src/index.js`), not the prefixed paths they
+occupy today (`best-practices-repo/src/index.js`). Path-filtered history queries need to
+account for that — e.g. `git log --follow -- best-practices-repo/src/index.js` rather
+than a plain path filter on the pre-merge commits.
 
 ## Running the service
 
