@@ -6,6 +6,37 @@ This repo is the "fixed the right way" half of a before/after teaching
 pair — see the sibling `problem-repo` for the state this was handed over
 in, and `docs/` for the full writeup.
 
+## Scope of this submission — what's actually done, and what isn't
+
+Being upfront about this rather than letting it surface in review:
+
+**Done — the Git/repo side of the handover:**
+- Repo audit and cleanup: resolved the unresolved merge conflict, purged
+  the leaked secrets from history (not just fixed forward), cleaned up
+  the stray branches, documented a branching convention going forward.
+- The onboarding note (DevOps lifecycle / CALMS / DORA), the branching
+  recommendation, the assumptions log, and the AI-use log.
+- Environment-variable handling for secrets (`.env.example`, `.gitignore`,
+  `dotenv`).
+
+**Not done — the Linux server / VM side of the lab:**
+The brief also asked for a sandbox VM or EC2 instance to be provisioned
+and audited against `server-baseline-policy.md` — directory permissions,
+the `deploy` user/`ops` group, hostname convention, and a network-fault
+diagnosis with evidence it's fixed. I didn't realize that was a separate,
+required part of the deliverable until it came back in review — I
+treated this as a repo-cleanup exercise and never stood up a server to
+audit. That part is genuinely missing from this submission, not
+something quietly skipped; `docs/ASSUMPTIONS_LOG.md` and
+`docs/AI_LOG.md` cover the Git side honestly, but neither claims server
+work that didn't happen.
+
+Next step on my end: provision the sandbox VM, run the audit against
+`server-baseline-policy.md`, and add the evidence (permissions output,
+`id deploy`, `hostnamectl`, a successful connectivity test) as its own
+section here or a `docs/SERVER_AUDIT.md`.
+
+
 ## Running locally
 
 ```bash
